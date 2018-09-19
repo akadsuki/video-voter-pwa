@@ -13,4 +13,7 @@ The blog [TODO an url to the blog serie]
         
  - ### Client
         
-        open client/index.html in your browser
+        npm install http-server -g
+        cd client
+        http-server
+        Go to http://localhost:8080 in your browser

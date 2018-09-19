@@ -2,12 +2,6 @@ $(document).ready(function () {
     loadVideoList();
 
     $("#add-video-btn").click(addVideo);
-    $(".fa-arrow-up").click(() => {
-        vote(true, $(this).parent().attr('id'));
-    });
-    $(".fa-arrow-down").click(() => {
-        vote(false, $(this).parent().attr('id'));
-    })
 });
 
 const loadVideoList = () => {

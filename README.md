@@ -5,12 +5,12 @@ This project is the source code of the blog series on how to create an offline f
 The blog [TODO an url to the blog serie]
 
 ## How to run?
- - ###Server
+ - ### Server
  
         cd server
         npm install
         npm start
         
- - ###Client
+ - ### Client
         
         open client/index.html in your browser

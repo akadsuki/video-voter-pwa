@@ -1,23 +1,49 @@
-const CACHE_NAME = 'vid-voter-v2';
+const CACHE_NAME = 'vid-voter-v3';
 const URLS_CACHE_ONLY = [
     "/css/bootstrap.min.css",
     "/js/bootstrap.min.js",
     "/js/jquery-3.3.1.min.js",
     "/image/cover.jpg",
     "/image/did-logo.png",
-    "https://use.fontawesome.com/releases/v5.3.1/css/all.css",
+
+    // font-awesome
+    "/css/all.min.css",
+    "/webfonts/fa-brands-400.eot",
+    "/webfonts/fa-brands-400.svg",
+    "/webfonts/fa-brands-400.ttf",
+    "/webfonts/fa-brands-400.woff",
+    "/webfonts/fa-brands-400.woff2",
+    "/webfonts/fa-regular-400.eot",
+    "/webfonts/fa-regular-400.svg",
+    "/webfonts/fa-regular-400.ttf",
+    "/webfonts/fa-regular-400.woff",
+    "/webfonts/fa-regular-400.woff2",
+    "/webfonts/fa-solid-900.eot",
+    "/webfonts/fa-solid-900.svg",
+    "/webfonts/fa-solid-900.ttf",
+    "/webfonts/fa-solid-900.woff",
+    "/webfonts/fa-solid-900.woff2",
 ];
 
 const URLS_OVER_NETWORK_WITH_CACHE_FALLBACK = [
     "/index.html",
     "/voter.html",
+    "/css/app.css",
+    "/css/cover.css",
+    "/js/app.js",
+    "/js/voter/voter.js",
     "http://localhost:3000/videos"
 ];
 
-self.addEventListener("install", function (event) {
+self.addEventListener("install", function(event) {
     event.waitUntil(
-        caches.open(CACHE_NAME).then(function (cache) {
+        caches.open(CACHE_NAME).then(function(cache) {
             return cache.addAll(URLS_CACHE_ONLY.concat(URLS_OVER_NETWORK_WITH_CACHE_FALLBACK));
+        }).catch((err) => {
+            console.error(err);
+            return new Promise((resolve, reject) => {
+                reject('ERROR: ' + err);
+            });
         })
     );
 });
@@ -25,11 +51,27 @@ self.addEventListener("install", function (event) {
 self.addEventListener("fetch", function (event) {
     const requestURL = new URL(event.request.url);
 
-    if (URLS_OVER_NETWORK_WITH_CACHE_FALLBACK.includes(requestURL.href) || URLS_OVER_NETWORK_WITH_CACHE_FALLBACK.includes(requestURL.pathname)) {
+    if (requestURL.pathname === '/') {
+      event.respondWith(getByNetworkFallingBackByCache("/index.html"));
+    } else if (URLS_OVER_NETWORK_WITH_CACHE_FALLBACK.includes(requestURL.href) || URLS_OVER_NETWORK_WITH_CACHE_FALLBACK.includes(requestURL.pathname)) {
         event.respondWith(getByNetworkFallingBackByCache(event.request));
     } else if (URLS_CACHE_ONLY.includes(requestURL.href) || URLS_CACHE_ONLY.includes(requestURL.pathname)) {
         event.respondWith(getByCacheOnly(event.request));
     }
+});
+
+self.addEventListener("activate", function (event) {
+    event.waitUntil(
+        caches.keys().then(function (cacheNames) {
+            return Promise.all(
+                cacheNames.map(function (cacheName) {
+                    if (CACHE_NAME !== cacheName && cacheName.startsWith("vid-voter")) {
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
+    );
 });
 
 /**
@@ -64,8 +106,8 @@ const getByNetworkFallingBackByCache = (request, showAlert = false) => {
  */
 const getByCacheOnly = (request) => {
     return caches.open(CACHE_NAME).then((cache) => {
-       return cache.match(request).then((response) => {
-           return response;
-       });
+        return cache.match(request).then((response) => {
+            return response;
+        });
     });
 };

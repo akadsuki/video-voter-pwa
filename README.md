@@ -2,7 +2,7 @@
 
 This project is the source code of the blog series on how to create an offline first progressive web app from an existing website
 
-The blog [TODO an url to the blog serie]
+The blog https://schoovaertswout.medium.com/offline-first-with-progressive-web-apps-part-1-3-102e61992567
 
 ## How to run?
  - ### Server
